@@ -59,12 +59,12 @@ class mlp:
         self.number_of_nodes.append(number_of_nodes)
 
         if len(self.number_of_nodes) > 1:
-            self.weights.append(np.random.randn(self.number_of_nodes[-1], self.number_of_nodes[-2])*(np.sqrt(2/(self.number_of_nodes[-1]* self.number_of_nodes[-2]))))
+            self.weights.append(np.random.randn(self.number_of_nodes[-1], self.number_of_nodes[-2])*np.sqrt(2/(self.number_of_nodes[-1]+self.number_of_nodes[-2])))
             self.delta_weights.append(np.zeros((number_of_nodes,self.number_of_nodes[self.number_of_layer])).tolist())
 
         if len(self.number_of_nodes) > 1:
             self.delta_biases.append(np.zeros((number_of_nodes)).tolist())
-            self.biases.append(np.random.uniform(0, 0, size=(number_of_nodes, 1)))
+            self.biases.append(np.random.uniform(-np.sqrt(1/self.number_of_nodes[-1]), np.sqrt(1/self.number_of_nodes[-1]), size=(number_of_nodes, 1)))
 
         self.number_of_layer += 1
 
