@@ -45,7 +45,7 @@ class mlp:
         self.number_of_nodes.append(number_of_nodes)
 
         if len(self.number_of_nodes) > 1:
-            self.weights.append(np.random.randn(self.number_of_nodes[-1], self.number_of_nodes[-2]) * np.sqrt(2 / (self.number_of_nodes[-1] + self.number_of_nodes[-2])))
+            self.weights.append(np.random.randn(self.number_of_nodes[-1], self.number_of_nodes[-2]) )
 
         if len(self.number_of_nodes) > 1:
             self.biases.append(np.random.uniform(0, 0, size=(number_of_nodes, 1)))
