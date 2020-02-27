@@ -1,5 +1,6 @@
 import numpy as np 
 import math
+import sys
 
 training_xor = [
     {
@@ -22,6 +23,16 @@ training_xor = [
 
 training_input = [[0,0],[1,0],[0,1],[1,1]]
 training_output = [[0,0],[1,1],[1,1],[0,0]]
+
+def show_progress(count=100, total=100,error=0,epoch=1,t_epoch=1):
+    bar_len = 60
+    filled_len = int(round(bar_len * count / float(total)))
+
+    percents = round(100.0 * count / float(total), 1)
+    bar = '█' * filled_len + '-' * (bar_len - filled_len)
+
+    sys.stdout.write('|%s| %s%s ... Epoch %d/%d | Error:%.5f\r' % (bar, percents, '%',epoch,t_epoch, error))
+    sys.stdout.flush()
 
 
 def sigmoid(x):
@@ -72,6 +83,7 @@ class mlp:
         '''
         Train the mlp
         '''
+        trap = 0
         counter = 0
         for n in range(0,epoch):
             sum_error = 0
@@ -86,24 +98,17 @@ class mlp:
                 sum_error += np.sum(np.power(np.subtract(target, outputs[-1]),2)) # Calculate square error for every data
                 for i in range(len(self.weights) - 1):
                     errors.insert(0, np.dot(self.weights[-1-i].T, errors[0]))
-
-                """
-                for i in range(len(self.weights)):
-                    # Calculate gradient and weight correction
-                    gradient = np.multiply(errors[-1-i], np.multiply(outputs[-1-i] , (1-outputs[-1-i] ))) # Calculate gradient for sigmoid activation function
-                    gradient *= self.learning_rate
-                    self.biases[-1-i] += gradient # Update biases
-                    delta_w  = np.dot(gradient, outputs[-2-i].T)
-                    self.weights[-1-i] += delta_w
-                """
                 
                 self.update_delta_weights(outputs,target)
 
                 if counter>=self.n_batch or x==len(inp)-1:
                     self.update_weights()
                     counter = 0
+                show_progress(n*(len(inp)-1)+x,(epoch-1)*(len(inp)-1)+(len(inp)-1),trap,n+1,epoch)
 
-            print("error :",sum_error/2,"Progress : ",n,"/",epoch)
+            trap = sum_error/2
+            #print("error :",sum_error/2,"Progress : ",n,"/",epoch)
+        print()
     
     def delta(self,layer,t_node,s_node,output,target):
         """
@@ -150,7 +155,10 @@ class mlp:
                     self.delta_weights[i][j][k] = 0
                 self.biases[i][j] -= self.learning_rate*self.delta_biases[i][j]
                 self.delta_biases[i][j] = 0
-        
+
+    def predict(self,test):
+        output = self.feed_forward(test)
+        return (np.where(output[-1] == np.amax(output[-1]))[0])
 
 
 if __name__ == "__main__":
